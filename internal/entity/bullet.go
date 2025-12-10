@@ -11,18 +11,20 @@ const (
 )
 
 type Bullet struct {
-	x      float64
-	y      float64
-	width  float64
-	height float64
+	x        float64
+	y        float64
+	width    float64
+	height   float64
+	velocity float64
 }
 
-func NewBullet(posX, posY float64) *Bullet {
+func NewBullet(posX, posY float64, velocity float64) *Bullet {
 	return &Bullet{
-		x:      posX,
-		y:      posY,
-		width:  float64(assets.EbiFryImage.Bounds().Max.X) * bulletImageScale,
-		height: float64(assets.EbiFryImage.Bounds().Max.Y) * bulletImageScale,
+		x:        posX,
+		y:        posY,
+		width:    float64(assets.EbiFryImage.Bounds().Max.X) * bulletImageScale,
+		height:   float64(assets.EbiFryImage.Bounds().Max.Y) * bulletImageScale,
+		velocity: velocity,
 	}
 }
 

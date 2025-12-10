@@ -1,6 +1,6 @@
 package internal
 
 const (
-	WindowWidth  = 640
-	WindowHeight = 480
+	WindowWidth  = 480
+	WindowHeight = 640
 )

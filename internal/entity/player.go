@@ -13,15 +13,18 @@ import (
 )
 
 const (
-	playerDelta         = 5
-	playerImageScale    = 0.1
-	playerInitialYRatio = 0.95
-	bulletInterval      = time.Duration(500 * time.Millisecond)
+	playerDelta           = 5
+	playerControllerDelta = 8
+	playerImageScale      = 0.1
+	playerInitialYRatio   = 0.95
+	bulletInterval        = time.Duration(500 * time.Millisecond)
 )
 
 var (
 	bullets []*Bullet
 )
+
+var _ Entity = &Player{}
 
 type Player struct {
 	x              float64
@@ -44,35 +47,68 @@ func NewPlayer() *Player {
 	}
 }
 
-func (p *Player) Update() {
-	keys := inpututil.AppendPressedKeys([]ebiten.Key{})
-
-	if lo.Contains(keys, ebiten.KeyA) {
-		p.x = max(0, p.x-playerDelta)
+func (p *Player) move(newPoint lo.Tuple2[float64, float64]) {
+	if newPoint.A < 0 {
+		newPoint.A = 0
 	}
-	if lo.Contains(keys, ebiten.KeyD) {
-		p.x = min(internal.WindowWidth-p.width, p.x+playerDelta)
+	if newPoint.A > internal.WindowWidth-p.width {
+		newPoint.A = internal.WindowWidth - p.width
 	}
-	if lo.Contains(keys, ebiten.KeyW) {
-		p.y = max(0, p.y-playerDelta)
+	if newPoint.B < 0 {
+		newPoint.B = 0
 	}
-	if lo.Contains(keys, ebiten.KeyS) {
-		p.y = min(internal.WindowHeight-p.height, p.y+playerDelta)
+	if newPoint.B > internal.WindowHeight-p.height {
+		newPoint.B = internal.WindowHeight - p.height
 	}
 
-	if lo.Contains(keys, ebiten.KeySpace) &&
-		time.Since(p.lastBulletTime) >= bulletInterval {
+	p.x = newPoint.A
+	p.y = newPoint.B
+}
+
+func (p *Player) shoot() {
+	if time.Since(p.lastBulletTime) >= bulletInterval {
 		p.lastBulletTime = time.Now()
 		bulletX := p.x + p.width/2
 		bulletY := p.y - internal.WindowHeight*0.01
-		bullets = append(bullets, NewBullet(bulletX, bulletY))
+		bullets = append(bullets, NewBullet(bulletX, bulletY, 1))
+	}
+}
+
+func (p *Player) Update(
+	controllerButtonTouchEvent *ControllerButtonTouchEvent,
+	shootButtonTouchEvent *ShootButtonTouchEvent,
+) {
+	keys := inpututil.AppendPressedKeys([]ebiten.Key{})
+
+	if lo.Contains(keys, ebiten.KeyW) {
+		p.move(lo.T2(p.x, p.y-playerDelta))
+	}
+	if lo.Contains(keys, ebiten.KeyA) {
+		p.move(lo.T2(p.x-playerDelta, p.y))
+	}
+	if lo.Contains(keys, ebiten.KeyS) {
+		p.move(lo.T2(p.x, p.y+playerDelta))
+	}
+	if lo.Contains(keys, ebiten.KeyD) {
+		p.move(lo.T2(p.x+playerDelta, p.y))
+	}
+
+	if controllerButtonTouchEvent != nil {
+		p.move(lo.T2(
+			p.x+controllerButtonTouchEvent.Direction.A*playerControllerDelta,
+			p.y+controllerButtonTouchEvent.Direction.B*playerControllerDelta,
+		))
+	}
+
+	if lo.Contains(keys, ebiten.KeySpace) || shootButtonTouchEvent != nil {
+		p.shoot()
 	}
 
 	lo.ForEach(bullets, func(bullet *Bullet, _ int) {
 		bullet.Update()
 	})
 	bullets = lo.Filter(bullets, func(bullet *Bullet, _ int) bool {
-		return bullet.y > 0
+		return bullet.y+bullet.height+5 > 0
 	})
 }
 
