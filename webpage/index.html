@@ -1,15 +1,15 @@
-
 <!DOCTYPE html>
-<iframe src="game.html" width="640" height="480"></iframe>
-
-
-<!-- 
-<!DOCTYPE html>
-<script src="wasm_exec.js"></script>
-<script>
-const go = new Go();
-WebAssembly.instantiateStreaming(fetch("game.wasm"), go.importObject).then(result => {
-    go.run(result.instance);
-});
-</script>
--->
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>えびてんじん</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Go で作ったシューティングゲーム 🍤🍤🍤 </h1>
+    <div class="container">
+        <iframe src="game.html"></iframe>    
+    </div>
+</body>
+</html>
