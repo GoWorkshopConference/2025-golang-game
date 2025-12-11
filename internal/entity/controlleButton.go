@@ -2,6 +2,7 @@ package entity
 
 import (
 	"image/color"
+	"math"
 	"time"
 
 	"github.com/GoWorkshopConference/golang-game/internal"
@@ -11,7 +12,7 @@ import (
 )
 
 var (
-	controllerButtonMargin    = 20.0
+	controllerButtonMargin    = 10.0
 	controllerButtonRadius    = 60.0
 	controllerButtonCenterPos = lo.T2(controllerButtonMargin+controllerButtonRadius, internal.WindowHeight-(controllerButtonMargin+controllerButtonRadius))
 	touchInterval             = time.Duration(300 * time.Millisecond)
@@ -25,6 +26,7 @@ var _ Entity = &ControllerButton{}
 type ControllerButton struct {
 	centerPos     lo.Tuple2[float64, float64]
 	radius        float64
+	touchID       *ebiten.TouchID
 	isTouched     bool
 	touchPos      lo.Tuple2[float64, float64]
 	lastTouchTime *time.Time
@@ -90,34 +92,55 @@ func NewControllerButtonTouchEvent(
 func (b *ControllerButton) Update() *ControllerButtonTouchEvent {
 	touchIDs := ebiten.AppendTouchIDs([]ebiten.TouchID{})
 
-	hitFlag := false
+	nowTouched := false
 	for _, touchID := range touchIDs {
 		x, y := ebiten.TouchPosition(touchID)
 		hit, _ := CircleHit(b.centerPos, b.radius+touchCircleMargin, float64(x), float64(y))
 		if hit {
+			b.touchID = lo.ToPtr(touchID)
 			b.touchPos = lo.T2(float64(x), float64(y))
-			hitFlag = true
+			nowTouched = true
+			b.isTouched = true
 			break
 		}
 	}
 
-	if hitFlag && !b.isTouched {
-		b.isTouched = true
+	nowOutOfCircleTouched := false
+	if !nowTouched && b.touchID != nil && lo.Contains(touchIDs, *b.touchID) {
+		nowOutOfCircleTouched = true
+
+		x, y := ebiten.TouchPosition(*b.touchID)
+		touchPos := lo.T2(float64(x), float64(y))
+
+		// centerPos からの方向ベクトルを計算
+		dx := touchPos.A - b.centerPos.A
+		dy := touchPos.B - b.centerPos.B
+
+		// 距離を計算
+		distance := math.Sqrt(dx*dx + dy*dy)
+
+		// 半径 b.radius+touchCircleMargin の位置を計算
+		maxRadius := b.radius + touchCircleMargin
+		if distance > 0 {
+			// 方向ベクトルを正規化して、最大半径を掛ける
+			normalizedDx := dx / distance
+			normalizedDy := dy / distance
+			b.touchPos = lo.T2(
+				b.centerPos.A+normalizedDx*maxRadius,
+				b.centerPos.B+normalizedDy*maxRadius,
+			)
+		} else {
+			// 距離が0の場合は中心位置を使用
+			b.touchPos = b.centerPos
+		}
 	}
 
-	if !hitFlag {
-		if b.lastTouchTime == nil {
-			b.lastTouchTime = lo.ToPtr(time.Now())
-		}
-		if b.lastTouchTime != nil && time.Since(*b.lastTouchTime) >= touchInterval {
-			b.lastTouchTime = nil
-			b.isTouched = false
-		}
-	}
-
-	if b.isTouched {
+	if nowTouched || nowOutOfCircleTouched {
 		return NewControllerButtonTouchEvent(b.touchPos, b.centerPos)
 	}
+
+	b.isTouched = false
+	b.touchID = nil
 
 	return nil
 }
