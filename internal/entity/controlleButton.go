@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/GoWorkshopConference/golang-game/internal"
-	"github.com/GoWorkshopConference/golang-game/internal/utils"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"github.com/samber/lo"
@@ -94,7 +93,7 @@ func (b *ControllerButton) Update() *ControllerButtonTouchEvent {
 	hitFlag := false
 	for _, touchID := range touchIDs {
 		x, y := ebiten.TouchPosition(touchID)
-		hit, _ := utils.CircleHit(b.centerPos, b.radius+touchCircleMargin, float64(x), float64(y))
+		hit, _ := CircleHit(b.centerPos, b.radius+touchCircleMargin, float64(x), float64(y))
 		if hit {
 			b.touchPos = lo.T2(float64(x), float64(y))
 			hitFlag = true
@@ -137,4 +136,12 @@ func (b *ControllerButton) Draw(screen *ebiten.Image) {
 	}
 
 	return
+}
+
+func (b *ControllerButton) GetShape() *Shape {
+	return nil
+}
+
+func (b *ControllerButton) GetHitBox() *Shape {
+	return nil
 }

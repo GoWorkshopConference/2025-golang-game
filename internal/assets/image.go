@@ -11,18 +11,26 @@ import (
 )
 
 var (
-	//go:embed lunch.png
-	lunchPNG []byte
-	//go:embed ebi_fry.png
+	//go:embed ebi_fry_3.png
 	ebiFryPNG []byte
+	//go:embed ebi_fry_3_rich.png
+	ebiFryRichPNG []byte
+	//go:embed big_mouse.png
+	bigMousePNG []byte
+	//go:embed sauce.png
+	saucePNG []byte
 
-	PlayerImage *ebiten.Image
-	EbiFryImage *ebiten.Image
+	PlayerImage     *ebiten.Image
+	EbiFryImage     *ebiten.Image
+	EbiFryRichImage *ebiten.Image
+	SauceImage      *ebiten.Image
 )
 
 func init() {
-	PlayerImage = lo.Must(LoadImage(lunchPNG))
+	PlayerImage = lo.Must(LoadImage(bigMousePNG))
 	EbiFryImage = lo.Must(LoadImage(ebiFryPNG))
+	EbiFryRichImage = lo.Must(LoadImage(ebiFryRichPNG))
+	SauceImage = lo.Must(LoadImage(saucePNG))
 }
 
 func LoadImage(data []byte) (*ebiten.Image, error) {
