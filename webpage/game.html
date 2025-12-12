@@ -1,8 +1,21 @@
 <!DOCTYPE html>
 <script src="wasm_exec.js"></script>
 <script>
-const go = new Go();
-WebAssembly.instantiateStreaming(fetch("game.wasm"), go.importObject).then(result => {
-    go.run(result.instance);
-});
+  // 親ページから送られてくるlocalStorageデータを保存
+  window.parentLocalStorage = {};
+
+  // postMessageでlocalStorageデータを受信
+  window.addEventListener("message", (event) => {
+    if (event.data && event.data.type === "localStorage") {
+      // データをマージ
+      Object.assign(window.parentLocalStorage, event.data.data);
+    }
+  });
+
+  const go = new Go();
+  WebAssembly.instantiateStreaming(fetch("game.wasm"), go.importObject).then(
+    (result) => {
+      go.run(result.instance);
+    },
+  );
 </script>

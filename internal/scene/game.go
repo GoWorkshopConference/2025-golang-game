@@ -2,6 +2,7 @@ package scene
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/GoWorkshopConference/golang-game/internal/entity"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -18,9 +19,11 @@ type GameScene struct {
 	enemyController  *entity.EbiFlyController
 	virusController  *entity.VirusController
 	gameController   *entity.GameController
+
+	sceneCreatedAt time.Time
 }
 
-func NewGameScene() *GameScene {
+func NewGameScene() Scene {
 	return &GameScene{
 		player:           entity.NewPlayer(),
 		controllerButton: entity.NewControllerButton(),
@@ -28,6 +31,8 @@ func NewGameScene() *GameScene {
 		enemyController:  entity.NewEbiFlyController(),
 		virusController:  entity.NewVirusController(),
 		gameController:   entity.NewGameController(),
+
+		sceneCreatedAt: time.Now(),
 	}
 }
 

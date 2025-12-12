@@ -1,15 +1,46 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>えびてんじん</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <h1>Go で作ったシューティングゲーム 🍤🍤🍤 </h1>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Go で作ったシューティングゲーム 🍤🍤🍤</h1>
     <div class="container">
-        <iframe src="game.html"></iframe>    
+      <iframe src="game.html" id="gameFrame"></iframe>
     </div>
-</body>
+    <script>
+      // iframeが読み込まれたらlocalStorageのデータを送信
+      const iframe = document.getElementById("gameFrame");
+      iframe.addEventListener("load", () => {
+        // localStorageの全データを取得
+        const localStorageData = {};
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          localStorageData[key] = localStorage.getItem(key);
+        }
+        // iframeにpostMessageで送信
+        iframe.contentWindow.postMessage(
+          {
+            type: "localStorage",
+            data: localStorageData,
+          },
+          "*",
+        );
+      });
+
+      // localStorageが変更されたらiframeに通知
+      window.addEventListener("storage", (e) => {
+        iframe.contentWindow.postMessage(
+          {
+            type: "localStorage",
+            data: { [e.key]: e.newValue },
+          },
+          "*",
+        );
+      });
+    </script>
+  </body>
 </html>

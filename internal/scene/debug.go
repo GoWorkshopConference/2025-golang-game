@@ -1,10 +1,10 @@
 package scene
 
 import (
+	"time"
+
 	"github.com/GoWorkshopConference/golang-game/internal/entity"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/samber/lo"
 )
 
 type DebugScene struct {
@@ -14,6 +14,8 @@ type DebugScene struct {
 	sauce         *entity.Sauce
 	virus         *entity.Virus
 	virusComputer *entity.VirusComputer
+
+	sceneCreatedAt time.Time
 }
 
 func NewDebugScene() *DebugScene {
@@ -24,14 +26,13 @@ func NewDebugScene() *DebugScene {
 		sauce:         entity.NewSauce(100, 100),
 		virus:         entity.NewVirus(200, 10),
 		virusComputer: entity.NewVirusComputer(300, 10),
+
+		sceneCreatedAt: time.Now(),
 	}
 }
 
 func (s *DebugScene) Update() {
-	pressedKeys := inpututil.AppendPressedKeys([]ebiten.Key{})
-	if lo.Contains(pressedKeys, ebiten.KeySpace) {
-		CurrentScene = NewGameScene()
-	}
+	sceneTransitionWithInterval(NewGameScene, s.sceneCreatedAt)
 }
 
 func (s *DebugScene) Draw(screen *ebiten.Image) {
