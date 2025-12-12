@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html
+  lang="ja"
+  data-server-url="https://ebiten-ranking-523681844761.asia-northeast2.run.app"
+>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,39 +11,38 @@
   </head>
   <body>
     <h1>Go で作ったシューティングゲーム 🍤🍤🍤</h1>
+    <div class="name-input-container">
+      <input
+        type="text"
+        id="playerNameInput"
+        placeholder="プレイヤー名を入力"
+        maxlength="20"
+      />
+      <button id="saveNameButton">保存</button>
+    </div>
     <div class="container">
       <iframe src="game.html" id="gameFrame"></iframe>
     </div>
-    <script>
-      // iframeが読み込まれたらlocalStorageのデータを送信
-      const iframe = document.getElementById("gameFrame");
-      iframe.addEventListener("load", () => {
-        // localStorageの全データを取得
-        const localStorageData = {};
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          localStorageData[key] = localStorage.getItem(key);
-        }
-        // iframeにpostMessageで送信
-        iframe.contentWindow.postMessage(
-          {
-            type: "localStorage",
-            data: localStorageData,
-          },
-          "*",
-        );
-      });
+    <div class="ranking-section">
+      <div class="ranking-header">
+        <h2>ランキング</h2>
+        <button id="refreshRankingButton">更新</button>
+      </div>
+      <div id="loadingMessage" class="loading-message">読み込み中...</div>
+      <div id="errorMessage" class="error-message" style="display: none"></div>
+      <div id="rankingList" class="ranking-list"></div>
+    </div>
+    <script type="module">
+      import { initPlayerName } from "./playerName.js";
+      import { initIframeStorage } from "./iframeStorage.js";
+      import { initRanking } from "./ranking.js";
 
-      // localStorageが変更されたらiframeに通知
-      window.addEventListener("storage", (e) => {
-        iframe.contentWindow.postMessage(
-          {
-            type: "localStorage",
-            data: { [e.key]: e.newValue },
-          },
-          "*",
-        );
-      });
+      const iframe = document.getElementById("gameFrame");
+
+      // 各機能を初期化
+      initPlayerName(iframe);
+      initIframeStorage(iframe);
+      initRanking();
     </script>
   </body>
 </html>

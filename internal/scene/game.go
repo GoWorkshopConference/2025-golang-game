@@ -45,7 +45,7 @@ func (s *GameScene) Update() {
 	s.virusController.Update()
 
 	if s.gameController.GetLife() <= 0 {
-		CurrentScene = NewGameOverScene(s.gameController.GetScore())
+		CurrentScene = NewGameOverScene(s.gameController.GetScore(), time.Since(s.sceneCreatedAt))
 	}
 }
 
@@ -56,5 +56,5 @@ func (s *GameScene) Draw(screen *ebiten.Image) {
 	s.controllerButton.Draw(screen)
 	s.shootButton.Draw(screen)
 
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("Score: %d, Life: %d", s.gameController.GetScore(), s.gameController.GetLife()))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("Score: %d, Life: %d, Time: %.2f (s)", s.gameController.GetScore(), s.gameController.GetLife(), time.Since(s.sceneCreatedAt).Seconds()))
 }

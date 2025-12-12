@@ -14,6 +14,9 @@ type GameController struct{}
 func NewGameController() *GameController {
 	score = 0
 	life = InitialLife
+	ebiFlies = []EbiFlyLike{}
+	viruses = []VirusLike{}
+	sauces = []*Sauce{}
 
 	return &GameController{}
 }

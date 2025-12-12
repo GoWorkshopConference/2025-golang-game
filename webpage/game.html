@@ -4,6 +4,22 @@
   // 親ページから送られてくるlocalStorageデータを保存
   window.parentLocalStorage = {};
 
+  // サーバーURLを取得（親ページのdata-server-url属性から）
+  function getServerUrl() {
+    try {
+      const parent = window.parent;
+      if (parent && parent.document) {
+        const serverUrl =
+          parent.document.documentElement.getAttribute("data-server-url");
+        return serverUrl || "http://localhost:8080";
+      }
+    } catch (e) {
+      // クロスオリジンエラーの場合はデフォルト値を使用
+    }
+    return "http://localhost:8080";
+  }
+  window.serverUrl = getServerUrl();
+
   // postMessageでlocalStorageデータを受信
   window.addEventListener("message", (event) => {
     if (event.data && event.data.type === "localStorage") {
