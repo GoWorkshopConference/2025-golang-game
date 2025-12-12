@@ -19,11 +19,17 @@ var (
 	bigMousePNG []byte
 	//go:embed sauce.png
 	saucePNG []byte
+	//go:embed virus.png
+	virusPNG []byte
+	//go:embed virus_computer.png
+	virusComputerPNG []byte
 
-	PlayerImage     *ebiten.Image
-	EbiFryImage     *ebiten.Image
-	EbiFryRichImage *ebiten.Image
-	SauceImage      *ebiten.Image
+	PlayerImage        *ebiten.Image
+	EbiFryImage        *ebiten.Image
+	EbiFryRichImage    *ebiten.Image
+	SauceImage         *ebiten.Image
+	VirusImage         *ebiten.Image
+	VirusComputerImage *ebiten.Image
 )
 
 func init() {
@@ -31,6 +37,8 @@ func init() {
 	EbiFryImage = lo.Must(LoadImage(ebiFryPNG))
 	EbiFryRichImage = lo.Must(LoadImage(ebiFryRichPNG))
 	SauceImage = lo.Must(LoadImage(saucePNG))
+	VirusImage = lo.Must(LoadImage(virusPNG))
+	VirusComputerImage = lo.Must(LoadImage(virusComputerPNG))
 }
 
 func LoadImage(data []byte) (*ebiten.Image, error) {

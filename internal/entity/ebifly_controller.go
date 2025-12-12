@@ -52,12 +52,12 @@ func (e *EbiFlyController) Update() {
 		addEbiFly(NewEbiFly(randX, ebiFlyInitialY))
 	}
 
-	// 敵の更新
+	// エビフライ達の更新
 	lo.ForEach(ebiFlies, func(enemy EbiFlyLike, _ int) {
 		enemy.Update()
 	})
 
-	// 画面外に出た敵を削除
+	// 画面外に出たエビフライを削除
 	ebiFliesLock.Lock()
 	ebiFlies = lo.Filter(ebiFlies, func(enemy EbiFlyLike, _ int) bool {
 		return enemy.GetShape().Y < internal.WindowHeight+50

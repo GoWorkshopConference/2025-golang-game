@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	ebiFlySpawnRate     = 0.01
+	ebiFlySpawnRate     = 0.015
 	ebiFlyImageScale    = 0.09
 	ebiFlySpawnInterval = time.Duration(1 * time.Second)
 	ebiFlyDelta         = 3

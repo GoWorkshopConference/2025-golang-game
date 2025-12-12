@@ -8,18 +8,22 @@ import (
 )
 
 type DebugScene struct {
-	ebiFly     *entity.EbiFly
-	player     *entity.Player
-	ebiFlyRich *entity.EbiFlyRich
-	sauce      *entity.Sauce
+	ebiFly        *entity.EbiFly
+	player        *entity.Player
+	ebiFlyRich    *entity.EbiFlyRich
+	sauce         *entity.Sauce
+	virus         *entity.Virus
+	virusComputer *entity.VirusComputer
 }
 
 func NewDebugScene() *DebugScene {
 	return &DebugScene{
-		ebiFly:     entity.NewEbiFly(10, 10),
-		player:     entity.NewPlayerWithPos(10, 100),
-		ebiFlyRich: entity.NewEbiFlyRich(100, 10),
-		sauce:      entity.NewSauce(100, 100),
+		ebiFly:        entity.NewEbiFly(10, 10),
+		player:        entity.NewPlayerWithPos(10, 100),
+		ebiFlyRich:    entity.NewEbiFlyRich(100, 10),
+		sauce:         entity.NewSauce(100, 100),
+		virus:         entity.NewVirus(200, 10),
+		virusComputer: entity.NewVirusComputer(300, 10),
 	}
 }
 
@@ -35,6 +39,8 @@ func (s *DebugScene) Draw(screen *ebiten.Image) {
 	s.player.Draw(screen)
 	s.ebiFlyRich.Draw(screen)
 	s.sauce.Draw(screen)
+	s.virus.Draw(screen)
+	s.virusComputer.Draw(screen)
 
 	return
 }

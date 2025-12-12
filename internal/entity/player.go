@@ -14,10 +14,11 @@ import (
 
 const (
 	playerDelta           = 5
-	playerControllerDelta = 8
+	playerControllerDelta = 5
 	playerImageScale      = 0.15
 	playerInitialYRatio   = 0.95
 	shootInterval         = time.Duration(1000 * time.Millisecond)
+	hitInterval           = time.Duration(2000 * time.Millisecond)
 
 	hitBoxOffset = 20.0
 )
@@ -29,9 +30,10 @@ var (
 var _ Entity = &Player{}
 
 type Player struct {
-	Shape         *Shape
-	HitBox        *Shape
-	lastShootTime time.Time
+	Shape            *Shape
+	HitBox           *Shape
+	lastVirusHitTime time.Time
+	lastShootTime    time.Time
 }
 
 func NewPlayer() *Player {
@@ -131,6 +133,7 @@ func (p *Player) Update(
 	})
 
 	p.checkHitEbiFly()
+	p.checkHitVirus()
 }
 
 func (p *Player) checkHitEbiFly() {
@@ -146,6 +149,33 @@ func (p *Player) checkHitEbiFly() {
 		return !ebiFly.GetIsRemoved()
 	})
 	ebiFliesLock.Unlock()
+}
+
+func (p *Player) checkHitVirus() {
+	virusLock.Lock()
+	for _, virus := range viruses {
+		isHit := EntityHit(*p.HitBox, *virus.GetHitBox())
+		if isHit {
+			p.HitVirus(virus)
+			virus.HitPlayer()
+		}
+	}
+	viruses = lo.Filter(viruses, func(virus VirusLike, _ int) bool {
+		return !virus.GetIsRemoved()
+	})
+	virusLock.Unlock()
+}
+
+func (p *Player) HitVirus(target VirusLike) {
+	if time.Since(p.lastVirusHitTime) >= hitInterval {
+		p.lastVirusHitTime = time.Now()
+
+		if _, ok := target.(*Virus); ok {
+			life -= 1
+		} else {
+			life -= InitialLife
+		}
+	}
 }
 
 func (p *Player) HitEbiFly() {}

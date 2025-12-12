@@ -18,7 +18,7 @@ func NewGame() *Game {
 	if internal.IsDebugMode {
 		scene.CurrentScene = scene.NewDebugScene()
 	} else {
-		scene.CurrentScene = scene.NewGameScene()
+		scene.CurrentScene = scene.NewMenuScene()
 	}
 
 	return &Game{}

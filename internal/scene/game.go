@@ -16,6 +16,7 @@ type GameScene struct {
 	controllerButton *entity.ControllerButton
 	shootButton      *entity.ShootButton
 	enemyController  *entity.EbiFlyController
+	virusController  *entity.VirusController
 	gameController   *entity.GameController
 }
 
@@ -25,6 +26,7 @@ func NewGameScene() *GameScene {
 		controllerButton: entity.NewControllerButton(),
 		shootButton:      entity.NewShootButton(),
 		enemyController:  entity.NewEbiFlyController(),
+		virusController:  entity.NewVirusController(),
 		gameController:   entity.NewGameController(),
 	}
 }
@@ -35,13 +37,19 @@ func (s *GameScene) Update() {
 	s.player.Update(controllerButtonTouchEvent, shootButtonTouchEvent)
 
 	s.enemyController.Update()
+	s.virusController.Update()
+
+	if s.gameController.GetLife() <= 0 {
+		CurrentScene = NewGameOverScene(s.gameController.GetScore())
+	}
 }
 
 func (s *GameScene) Draw(screen *ebiten.Image) {
 	s.enemyController.Draw(screen)
+	s.virusController.Draw(screen)
 	s.player.Draw(screen)
 	s.controllerButton.Draw(screen)
 	s.shootButton.Draw(screen)
 
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("Score: %d", s.gameController.GetScore()))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("Score: %d, Life: %d", s.gameController.GetScore(), s.gameController.GetLife()))
 }
