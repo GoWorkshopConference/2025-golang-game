@@ -20,7 +20,19 @@
       />
       <button id="saveNameButton">保存</button>
     </div>
+    <div class="source-link">
+      <a
+        href="https://github.com/GoWorkshopConference/2025-golang-game"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        📦 ソースコード
+      </a>
+    </div>
     <div class="container">
+      <div id="wasmLoadingMessage" class="wasm-loading-message">
+        WASMを読み込み中です。しばらくお待ちください...
+      </div>
       <iframe src="game.html" id="gameFrame"></iframe>
     </div>
     <div class="ranking-section">
@@ -38,6 +50,41 @@
       import { initRanking } from "./ranking.js";
 
       const iframe = document.getElementById("gameFrame");
+      const wasmLoadingMessage = document.getElementById("wasmLoadingMessage");
+
+      // WASM読み込み状態の監視
+      iframe.addEventListener("load", () => {
+        // iframeの読み込みが完了したら、さらにWASMの読み込み完了を待つ
+        // iframe内のwindowが利用可能になるまで待機
+        const checkWasmLoaded = setInterval(() => {
+          try {
+            // iframe内のwindowにアクセスして、WASMが読み込まれているか確認
+            const iframeWindow = iframe.contentWindow;
+            if (
+              iframeWindow &&
+              iframeWindow.document.readyState === "complete"
+            ) {
+              // 少し遅延させてから非表示にする（WASMの初期化時間を考慮）
+              setTimeout(() => {
+                wasmLoadingMessage.style.display = "none";
+                clearInterval(checkWasmLoaded);
+              }, 1000);
+            }
+          } catch (e) {
+            // クロスオリジンエラーなどでアクセスできない場合は、一定時間後に非表示
+            setTimeout(() => {
+              wasmLoadingMessage.style.display = "none";
+              clearInterval(checkWasmLoaded);
+            }, 3000);
+          }
+        }, 100);
+
+        // 最大10秒後に強制的に非表示にする
+        setTimeout(() => {
+          clearInterval(checkWasmLoaded);
+          wasmLoadingMessage.style.display = "none";
+        }, 10000);
+      });
 
       // 各機能を初期化
       initPlayerName(iframe);
