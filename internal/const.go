@@ -8,7 +8,8 @@ const (
 )
 
 var (
-	DebugColor = color.RGBA{0xff, 0x20, 0xAA, 0xff}
+	DebugColor  = color.RGBA{0xff, 0x20, 0xAA, 0xff}
+	EbitenColor = color.RGBA{219, 87, 31, 0xff}
 )
 
 // 環境によって変わる変数

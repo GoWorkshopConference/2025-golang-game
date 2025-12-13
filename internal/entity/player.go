@@ -18,7 +18,7 @@ const (
 	playerImageScale      = 0.15
 	playerInitialYRatio   = 0.95
 	shootInterval         = time.Duration(1000 * time.Millisecond)
-	hitInterval           = time.Duration(2000 * time.Millisecond)
+	hitInterval           = time.Duration(3000 * time.Millisecond)
 
 	hitBoxOffset = 20.0
 )
@@ -181,7 +181,10 @@ func (p *Player) HitVirus(target VirusLike) {
 func (p *Player) HitEbiFly() {}
 
 func (p *Player) Draw(screen *ebiten.Image) {
-	draw(screen, p, assets.PlayerImage, lo.T2(playerImageScale, playerImageScale))
+	if time.Since(p.lastVirusHitTime) >= hitInterval ||
+		(time.Since(p.lastVirusHitTime).Milliseconds()%500) < 350 {
+		draw(screen, p, assets.PlayerImage, lo.T2(playerImageScale, playerImageScale))
+	}
 
 	lo.ForEach(sauces, func(sauce *Sauce, _ int) {
 		sauce.Draw(screen)

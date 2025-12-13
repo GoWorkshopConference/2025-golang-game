@@ -1,6 +1,13 @@
 package scene
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"bytes"
+	"log"
+
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
+)
 
 type Scene interface {
 	Update()
@@ -15,3 +22,15 @@ var (
 )
 
 var CurrentScene Scene
+
+var (
+	mplusFaceSource *text.GoTextFaceSource
+)
+
+func init() {
+	s, err := text.NewGoTextFaceSource(bytes.NewReader(fonts.MPlus1pRegular_ttf))
+	if err != nil {
+		log.Fatal(err)
+	}
+	mplusFaceSource = s
+}
