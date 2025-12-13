@@ -46,7 +46,7 @@ func (s *MenuScene) Update() {
 func (s *MenuScene) Draw(screen *ebiten.Image) {
 	drawText(screen, "えびフライ", baseLineX, logoY, 48.0, internal.EbitenColor)
 
-	if time.Since(s.sceneCreatedAt) > time.Duration(500*time.Millisecond) {
+	if time.Since(s.sceneCreatedAt) > DisplayInterval {
 		drawText(screen, "スペースキーを押すか", baseLineX+70, logoY+70, 16.0, color.White)
 
 		drawText(screen, "画面をタップしてゲームスタート", baseLineX+30, logoY+90, 16.0, color.White)

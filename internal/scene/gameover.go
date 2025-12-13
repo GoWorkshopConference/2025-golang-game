@@ -2,12 +2,16 @@ package scene
 
 import (
 	"fmt"
+	"image/color"
 	"log"
 	"time"
 
 	"github.com/GoWorkshopConference/golang-game/internal"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+)
+
+var (
+	gameOverBaseLineY = 200.
 )
 
 var _ Scene = &GameOverScene{}
@@ -48,5 +52,11 @@ func (s *GameOverScene) Update() {
 }
 
 func (s *GameOverScene) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("GameOver... \nScore: %d,\nLifeTime: %.2f (s)\nPress Enter or Touch to Continue", s.score, s.lifeTime.Seconds()))
+	drawText(screen, "GameOver...", 100, gameOverBaseLineY, 48.0, internal.EbitenColor)
+	drawText(screen, fmt.Sprintf("スコア： %d 点", s.score), 100, gameOverBaseLineY+70, 24.0, color.White)
+	drawText(screen, fmt.Sprintf("生存時間： %.2f 秒", s.lifeTime.Seconds()), 100, gameOverBaseLineY+100, 24.0, color.White)
+
+	if time.Since(s.sceneCreatedAt) > DisplayInterval {
+		drawText(screen, "タップするかエンターキーで再挑戦！", baseLineX-20, gameOverBaseLineY+200, 20.0, internal.EbitenColor)
+	}
 }

@@ -18,7 +18,7 @@ type DebugScene struct {
 	sceneCreatedAt time.Time
 }
 
-func NewDebugScene() *DebugScene {
+func NewDebugScene() Scene {
 	return &DebugScene{
 		ebiFly:        entity.NewEbiFly(10, 10),
 		player:        entity.NewPlayerWithPos(10, 100),
