@@ -36,6 +36,11 @@ export function initRanking() {
       if (data.rankings && data.rankings.length > 0) {
         // ランキングを表示
         data.rankings.forEach((score, index) => {
+          // データの検証とサニタイズ
+          if (!score || typeof score !== "object") {
+            return; // 無効なデータはスキップ
+          }
+
           const rank = index + 1;
           const listItem = document.createElement("div");
           listItem.className = "ranking-item";
@@ -46,15 +51,31 @@ export function initRanking() {
 
           const nameElement = document.createElement("span");
           nameElement.className = "username";
-          nameElement.textContent = score.username || "名無し";
+          // usernameをサニタイズ（textContentで自動エスケープされるが、念のため検証）
+          const username = typeof score.username === "string" 
+            ? score.username.trim().substring(0, 50) // 最大50文字に制限
+            : "unknown";
+          nameElement.textContent = username || "unknown";
 
           const scoreElement = document.createElement("span");
           scoreElement.className = "score";
-          scoreElement.textContent = `${score.score.toLocaleString()}点`;
+          // スコアが数値であることを確認
+          const scoreValue = typeof score.score === "number" && !isNaN(score.score)
+            ? score.score
+            : 0;
+          scoreElement.textContent = `${scoreValue.toLocaleString()}点`;
 
           const dateElement = document.createElement("span");
           dateElement.className = "date";
-          const date = new Date(score.created_at?.seconds * 1000 || score.created_at);
+          // 日付の検証
+          let date;
+          if (score.created_at?.seconds) {
+            date = new Date(score.created_at.seconds * 1000);
+          } else if (score.created_at) {
+            date = new Date(score.created_at);
+          } else {
+            date = null;
+          }
           dateElement.textContent = formatDate(date);
 
           listItem.appendChild(rankElement);
@@ -65,7 +86,11 @@ export function initRanking() {
           rankingList.appendChild(listItem);
         });
       } else {
-        rankingList.innerHTML = '<div class="no-ranking">ランキングデータがありません</div>';
+        // innerHTMLの代わりにtextContentを使用（より安全）
+        const noDataDiv = document.createElement("div");
+        noDataDiv.className = "no-ranking";
+        noDataDiv.textContent = "ランキングデータがありません";
+        rankingList.appendChild(noDataDiv);
       }
     } catch (error) {
       console.error("ランキングの取得に失敗しました:", error);
